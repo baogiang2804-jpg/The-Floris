@@ -33,7 +33,26 @@ export default defineConfig(({mode, command}) => {
       include: ['react-is', 'recharts'],
     },
     build: {
-      chunkSizeWarningLimit: 2000,
+      target: ['es2020', 'safari14', 'chrome87', 'firefox78'],
+      cssCodeSplit: true,
+      chunkSizeWarningLimit: 1200,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react-dom') || id.includes('react/') || id.includes('scheduler')) {
+                return 'vendor-react';
+              }
+              if (id.includes('recharts') || id.includes('react-is') || id.includes('d3-')) {
+                return 'vendor-charts';
+              }
+              if (id.includes('lucide-react')) {
+                return 'vendor-icons';
+              }
+            }
+          },
+        },
+      },
     },
     server: {
       port: 3000,

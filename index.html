@@ -11,7 +11,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
     <script>
       // Đảm bảo dấu gạch chéo cuối URL cho GitHub Pages project site
       // Ví dụ: https://baogiang2804-jpg.github.io/Floris1 -> https://baogiang2804-jpg.github.io/Floris1/
@@ -72,13 +72,13 @@
       .floris-loader-card {
         max-width: 380px;
         width: 100%;
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(254, 205, 211, 0.7);
         border-radius: 28px;
         padding: 32px 24px;
-        box-shadow: 0 16px 36px -8px rgba(244, 114, 182, 0.18);
+        box-shadow: 0 16px 36px -8px rgba(244, 114, 182, 0.2);
         box-sizing: border-box;
       }
       .floris-loader-icon {
@@ -97,7 +97,7 @@
         width: 32px;
         height: 32px;
         margin: 16px auto 12px;
-        border: 3px solid rgba(244, 114, 182, 0.2);
+        border: 3px solid rgba(244, 114, 182, 0.25);
         border-top-color: #f43f5e;
         border-radius: 50%;
         animation: florisSpin 0.9s linear infinite;
@@ -157,9 +157,9 @@
           <h1 class="floris-loader-title">Floris Atelier</h1>
           <p class="floris-loader-sub">Sổ Tay Pha Chế Nước Hoa Mùa Xuân</p>
           <div class="floris-spinner"></div>
-          <p class="floris-loader-status">Đang chuẩn bị hương sắc mùa xuân...</p>
+          <p class="floris-loader-status" id="floris-status-text">Đang tải không gian mùa xuân...</p>
           <div class="floris-slow-notice" id="floris-slow-notice">
-            <p style="margin: 0 0 10px; font-size: 11px; color: #9ca3af;">Mạng tải chậm? Hãy bấm nút bên dưới:</p>
+            <p style="margin: 0 0 10px; font-size: 11px; color: #9ca3af;">Đường truyền mạng chậm? Hãy bấm để tải lại:</p>
             <button type="button" class="floris-reload-btn" onclick="window.location.reload()">🌸 Tải lại trang</button>
           </div>
         </div>
@@ -168,7 +168,7 @@
         setTimeout(function() {
           var n = document.getElementById('floris-slow-notice');
           if (n) n.style.display = 'block';
-        }, 7000);
+        }, 8000);
       </script>
     </div>
     <noscript>

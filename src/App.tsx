@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import {
   FileCode,
   FlaskConical,
@@ -19,20 +19,57 @@ import { SeasonalSelector } from './components/SeasonalSelector';
 import { VolumeAndConcentration } from './components/VolumeAndConcentration';
 import { OlfactoryPyramidSliders } from './components/OlfactoryPyramidSliders';
 import { ScentProfileView } from './components/ScentProfileView';
-import { AIEvaluatorModal } from './components/AIEvaluatorModal';
-import { PythonStreamlitModal } from './components/PythonStreamlitModal';
-import { SavedFormulasModal } from './components/SavedFormulasModal';
-import { WelcomeGuideModal } from './components/WelcomeGuideModal';
-import { VoiceAssistantModal } from './components/VoiceAssistantModal';
-import { SubWebCsvStudio } from './components/SubWebCsvStudio';
-import { SubWebAIEvaluator } from './components/SubWebAIEvaluator';
-import { SubWebExperimentalFormula } from './components/SubWebExperimentalFormula';
-import { SubWebPythonStreamlit } from './components/SubWebPythonStreamlit';
-import { PresentationShowcaseHub } from './components/PresentationShowcaseHub';
-import { AddCustomIngredientModal } from './components/AddCustomIngredientModal';
-import { ExperimentalFormulaPopupModal } from './components/ExperimentalFormulaPopupModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { SpringPetals } from './components/SpringPetals';
+
+// Code-splitting via lazy import: Chỉ tải khi mở trang phụ/popup, giảm hơn 70% dung lượng bundle nạp ban đầu trên điện thoại
+const PresentationShowcaseHub = lazy(() =>
+  import('./components/PresentationShowcaseHub').then((m) => ({ default: m.PresentationShowcaseHub }))
+);
+const AIEvaluatorModal = lazy(() =>
+  import('./components/AIEvaluatorModal').then((m) => ({ default: m.AIEvaluatorModal }))
+);
+const PythonStreamlitModal = lazy(() =>
+  import('./components/PythonStreamlitModal').then((m) => ({ default: m.PythonStreamlitModal }))
+);
+const SavedFormulasModal = lazy(() =>
+  import('./components/SavedFormulasModal').then((m) => ({ default: m.SavedFormulasModal }))
+);
+const WelcomeGuideModal = lazy(() =>
+  import('./components/WelcomeGuideModal').then((m) => ({ default: m.WelcomeGuideModal }))
+);
+const VoiceAssistantModal = lazy(() =>
+  import('./components/VoiceAssistantModal').then((m) => ({ default: m.VoiceAssistantModal }))
+);
+const SubWebCsvStudio = lazy(() =>
+  import('./components/SubWebCsvStudio').then((m) => ({ default: m.SubWebCsvStudio }))
+);
+const SubWebAIEvaluator = lazy(() =>
+  import('./components/SubWebAIEvaluator').then((m) => ({ default: m.SubWebAIEvaluator }))
+);
+const SubWebExperimentalFormula = lazy(() =>
+  import('./components/SubWebExperimentalFormula').then((m) => ({ default: m.SubWebExperimentalFormula }))
+);
+const SubWebPythonStreamlit = lazy(() =>
+  import('./components/SubWebPythonStreamlit').then((m) => ({ default: m.SubWebPythonStreamlit }))
+);
+const AddCustomIngredientModal = lazy(() =>
+  import('./components/AddCustomIngredientModal').then((m) => ({ default: m.AddCustomIngredientModal }))
+);
+const ExperimentalFormulaPopupModal = lazy(() =>
+  import('./components/ExperimentalFormulaPopupModal').then((m) => ({ default: m.ExperimentalFormulaPopupModal }))
+);
+
+const SubWebLoadingFallback = () => (
+  <div className="min-h-[40vh] flex flex-col items-center justify-center py-16 px-4 text-center">
+    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-100 to-pink-200 flex items-center justify-center text-rose-500 shadow-sm mb-4 animate-bounce">
+      <span className="text-2xl">🌸</span>
+    </div>
+    <div className="w-6 h-6 border-2 border-rose-300 border-t-rose-500 rounded-full animate-spin mb-3"></div>
+    <p className="text-sm font-semibold text-gray-700">Đang chuẩn bị không gian làm việc...</p>
+    <p className="text-xs text-rose-500 mt-1">Hương sắc mùa xuân Floris</p>
+  </div>
+);
 import {
   SEASONAL_TEMPLATES,
   EXPERIMENTAL_BASELINE_FORMULA,
@@ -1100,33 +1137,35 @@ export default function App() {
         {activePage === 'main' && (
           <>
             {/* 1. CÔNG THỨC NƯỚC HOA THỰC NGHIỆM BAN ĐẦU CỦA NHÓM & TƯ VẤN CẢI TIẾN CÙNG AI */}
-            <PresentationShowcaseHub
-              seasonKey={selectedSeason}
-              seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
-              totalVolume={totalVolume}
-              concentrationName={concentrationName}
-              concentrationPercent={concentrationPercent}
-              pureFragranceMl={formulaResults.pureFragranceMl}
-              carrierAlcoholMl={formulaResults.carrierAlcoholMl}
-              slots={slots}
-              calculatedIngredients={formulaResults.calculatedIngredients}
-              tierTotals={formulaResults.tierTotals}
-              totalPercentage={formulaResults.totalPercentage}
-              isValidTotal={formulaResults.isValidTotal}
-              perfumeName={perfumeName}
-              isQrVisitorMode={isQrVisitorMode}
-              onRestoreExperimentalBaseline={handleRestoreExperimentalBaseline}
-              onUpdateSlotObservedNote={handleUpdateSlotObservedNote}
-              onApplyAdjustedFormula={handleApplyAIAdjustedFormula}
-              onSaveProposedToDrawer={handleSaveProposedFormulaToDrawer}
-              onOpenVoiceWidget={() => setIsVoiceWidgetOpen(true)}
-              onAutoBalance={handleAutoBalance}
-              onOpenExperimentalPopup={() => setIsExperimentalPopupOpen(true)}
-              onOpenExperimentalWeb={() => {
-                setActivePage('experimental');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
+            <Suspense fallback={<SubWebLoadingFallback />}>
+              <PresentationShowcaseHub
+                seasonKey={selectedSeason}
+                seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
+                totalVolume={totalVolume}
+                concentrationName={concentrationName}
+                concentrationPercent={concentrationPercent}
+                pureFragranceMl={formulaResults.pureFragranceMl}
+                carrierAlcoholMl={formulaResults.carrierAlcoholMl}
+                slots={slots}
+                calculatedIngredients={formulaResults.calculatedIngredients}
+                tierTotals={formulaResults.tierTotals}
+                totalPercentage={formulaResults.totalPercentage}
+                isValidTotal={formulaResults.isValidTotal}
+                perfumeName={perfumeName}
+                isQrVisitorMode={isQrVisitorMode}
+                onRestoreExperimentalBaseline={handleRestoreExperimentalBaseline}
+                onUpdateSlotObservedNote={handleUpdateSlotObservedNote}
+                onApplyAdjustedFormula={handleApplyAIAdjustedFormula}
+                onSaveProposedToDrawer={handleSaveProposedFormulaToDrawer}
+                onOpenVoiceWidget={() => setIsVoiceWidgetOpen(true)}
+                onAutoBalance={handleAutoBalance}
+                onOpenExperimentalPopup={() => setIsExperimentalPopupOpen(true)}
+                onOpenExperimentalWeb={() => {
+                  setActivePage('experimental');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            </Suspense>
 
             {/* 2. SƠ ĐỒ TÓM TẮT QUY TRÌNH THUYẾT TRÌNH & LƯU Ý HÓA HỌC */}
             <section className="rounded-xl bg-slate-900/60 border border-slate-800 overflow-hidden">
@@ -1448,107 +1487,115 @@ export default function App() {
         )}
 
         {activePage === 'experimental' && (
-          <SubWebExperimentalFormula
-            totalVolume={totalVolume}
-            concentrationName={concentrationName}
-            concentrationPercent={concentrationPercent}
-            pureFragranceMl={formulaResults.pureFragranceMl}
-            carrierAlcoholMl={formulaResults.carrierAlcoholMl}
-            calculatedIngredients={formulaResults.calculatedIngredients}
-            tierTotals={formulaResults.tierTotals}
-            totalPercentage={formulaResults.totalPercentage}
-            perfumeName={perfumeName}
-            onRestoreExperimentalBaseline={handleRestoreExperimentalBaseline}
-            onUpdateSlotObservedNote={handleUpdateSlotObservedNote}
-            onApplyVariantToStudio={(adjustedItems, proposedName, summaryNote) => {
-              handleApplyAIAdjustedFormula(adjustedItems, proposedName, summaryNote);
-            }}
-            onOpenExperimentalPopup={() => setIsExperimentalPopupOpen(true)}
-            onOpenGuideModal={() => setIsGuideOpen(true)}
-            onBackToMainWeb={() => {
-              setActivePage('main');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onGoToAIWeb={() => {
-              setActivePage('ai');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
+          <Suspense fallback={<SubWebLoadingFallback />}>
+            <SubWebExperimentalFormula
+              totalVolume={totalVolume}
+              concentrationName={concentrationName}
+              concentrationPercent={concentrationPercent}
+              pureFragranceMl={formulaResults.pureFragranceMl}
+              carrierAlcoholMl={formulaResults.carrierAlcoholMl}
+              calculatedIngredients={formulaResults.calculatedIngredients}
+              tierTotals={formulaResults.tierTotals}
+              totalPercentage={formulaResults.totalPercentage}
+              perfumeName={perfumeName}
+              onRestoreExperimentalBaseline={handleRestoreExperimentalBaseline}
+              onUpdateSlotObservedNote={handleUpdateSlotObservedNote}
+              onApplyVariantToStudio={(adjustedItems, proposedName, summaryNote) => {
+                handleApplyAIAdjustedFormula(adjustedItems, proposedName, summaryNote);
+              }}
+              onOpenExperimentalPopup={() => setIsExperimentalPopupOpen(true)}
+              onOpenGuideModal={() => setIsGuideOpen(true)}
+              onBackToMainWeb={() => {
+                setActivePage('main');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onGoToAIWeb={() => {
+                setActivePage('ai');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </Suspense>
         )}
 
         {activePage === 'csv' && (
-          <SubWebCsvStudio
-            perfumeName={perfumeName}
-            onChangePerfumeName={setPerfumeName}
-            selectedSeason={selectedSeason}
-            onSelectSeason={handleSelectSeason}
-            totalVolume={totalVolume}
-            onChangeVolume={setTotalVolume}
-            concentrationName={concentrationName}
-            concentrationPercent={concentrationPercent}
-            onChangeConcentration={(name, pct) => {
-              setConcentrationName(name);
-              setConcentrationPercent(pct);
-            }}
-            slots={slots}
-            calculatedIngredients={formulaResults.calculatedIngredients}
-            tierTotals={formulaResults.tierTotals}
-            totalPercentage={formulaResults.totalPercentage}
-            isValidTotal={formulaResults.isValidTotal}
-            customIngredients={customIngredients}
-            onUpdateSlotPercentage={handleUpdateSlotPercentage}
-            onUpdateSlotIngredient={handleUpdateSlotIngredient}
-            onUpdateSlotCustomName={handleUpdateSlotCustomName}
-            onOpenAddCustomIngredient={handleOpenAddCustomIngredient}
-            onAutoBalance={handleAutoBalance}
-            onQuickSave={handleQuickSave}
-            onExportCsv={handleExportCsv}
-            onImportFormulaFromCsv={handleImportFormulaFromCsv}
-            onBackToMainWeb={() => {
-              setActivePage('main');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
+          <Suspense fallback={<SubWebLoadingFallback />}>
+            <SubWebCsvStudio
+              perfumeName={perfumeName}
+              onChangePerfumeName={setPerfumeName}
+              selectedSeason={selectedSeason}
+              onSelectSeason={handleSelectSeason}
+              totalVolume={totalVolume}
+              onChangeVolume={setTotalVolume}
+              concentrationName={concentrationName}
+              concentrationPercent={concentrationPercent}
+              onChangeConcentration={(name, pct) => {
+                setConcentrationName(name);
+                setConcentrationPercent(pct);
+              }}
+              slots={slots}
+              calculatedIngredients={formulaResults.calculatedIngredients}
+              tierTotals={formulaResults.tierTotals}
+              totalPercentage={formulaResults.totalPercentage}
+              isValidTotal={formulaResults.isValidTotal}
+              customIngredients={customIngredients}
+              onUpdateSlotPercentage={handleUpdateSlotPercentage}
+              onUpdateSlotIngredient={handleUpdateSlotIngredient}
+              onUpdateSlotCustomName={handleUpdateSlotCustomName}
+              onOpenAddCustomIngredient={handleOpenAddCustomIngredient}
+              onAutoBalance={handleAutoBalance}
+              onQuickSave={handleQuickSave}
+              onExportCsv={handleExportCsv}
+              onImportFormulaFromCsv={handleImportFormulaFromCsv}
+              onBackToMainWeb={() => {
+                setActivePage('main');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </Suspense>
         )}
 
         {activePage === 'ai' && (
-          <SubWebAIEvaluator
-            seasonKey={selectedSeason}
-            seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
-            totalVolume={totalVolume}
-            concentrationName={concentrationName}
-            concentrationPercent={concentrationPercent}
-            pureFragranceMl={formulaResults.pureFragranceMl}
-            carrierAlcoholMl={formulaResults.carrierAlcoholMl}
-            slots={slots}
-            ingredients={formulaResults.calculatedIngredients}
-            tierTotals={formulaResults.tierTotals}
-            totalPercentage={formulaResults.totalPercentage}
-            isValidTotal={formulaResults.isValidTotal}
-            perfumeName={perfumeName}
-            isQrVisitorMode={isQrVisitorMode}
-            onSavePerfumeName={(name) => setPerfumeName(name)}
-            onAutoBalance={handleAutoBalance}
-            onOpenVoiceWidget={() => setIsVoiceWidgetOpen(true)}
-            onRestoreExperimentalBaseline={handleRestoreExperimentalBaseline}
-            onUpdateSlotObservedNote={handleUpdateSlotObservedNote}
-            onApplyAdjustedFormula={handleApplyAIAdjustedFormula}
-            onSaveProposedToDrawer={handleSaveProposedFormulaToDrawer}
-            onBackToMainWeb={() => {
-              setActivePage('main');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
+          <Suspense fallback={<SubWebLoadingFallback />}>
+            <SubWebAIEvaluator
+              seasonKey={selectedSeason}
+              seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
+              totalVolume={totalVolume}
+              concentrationName={concentrationName}
+              concentrationPercent={concentrationPercent}
+              pureFragranceMl={formulaResults.pureFragranceMl}
+              carrierAlcoholMl={formulaResults.carrierAlcoholMl}
+              slots={slots}
+              ingredients={formulaResults.calculatedIngredients}
+              tierTotals={formulaResults.tierTotals}
+              totalPercentage={formulaResults.totalPercentage}
+              isValidTotal={formulaResults.isValidTotal}
+              perfumeName={perfumeName}
+              isQrVisitorMode={isQrVisitorMode}
+              onSavePerfumeName={(name) => setPerfumeName(name)}
+              onAutoBalance={handleAutoBalance}
+              onOpenVoiceWidget={() => setIsVoiceWidgetOpen(true)}
+              onRestoreExperimentalBaseline={handleRestoreExperimentalBaseline}
+              onUpdateSlotObservedNote={handleUpdateSlotObservedNote}
+              onApplyAdjustedFormula={handleApplyAIAdjustedFormula}
+              onSaveProposedToDrawer={handleSaveProposedFormulaToDrawer}
+              onBackToMainWeb={() => {
+                setActivePage('main');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </Suspense>
         )}
 
         {activePage === 'python' && (
-          <SubWebPythonStreamlit
-            onBackToMainWeb={() => {
-              setActivePage('main');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onSyncFormulaToWeb={handleSyncFromPython}
-          />
+          <Suspense fallback={<SubWebLoadingFallback />}>
+            <SubWebPythonStreamlit
+              onBackToMainWeb={() => {
+                setActivePage('main');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onSyncFormulaToWeb={handleSyncFromPython}
+            />
+          </Suspense>
         )}
       </main>
 
@@ -1668,105 +1715,133 @@ export default function App() {
       />
 
       {/* Modal 1: Saved Formulas & Comparison Drawer */}
-      <SavedFormulasModal
-        isOpen={isSavedModalOpen}
-        onClose={() => setIsSavedModalOpen(false)}
-        savedFormulas={savedFormulas}
-        currentFormulaState={{
-          season: selectedSeason,
-          seasonTitle: SEASONAL_TEMPLATES[selectedSeason].title,
-          totalVolume,
-          concentrationName,
-          concentrationPercent,
-          slots,
-          tierTotals: formulaResults.tierTotals,
-          totalPercentage: formulaResults.totalPercentage,
-          calculatedIngredients: formulaResults.calculatedIngredients,
-          pureFragranceMl: formulaResults.pureFragranceMl,
-          carrierAlcoholMl: formulaResults.carrierAlcoholMl,
-          perfumeTitle: perfumeName,
-        }}
-        onSaveCurrentFormula={handleSaveCurrentFormula}
-        onLoadFormula={handleLoadFormula}
-        onDeleteFormula={handleDeleteFormula}
-        onClearAllFormulas={handleClearAllFormulas}
-      />
+      {isSavedModalOpen && (
+        <Suspense fallback={null}>
+          <SavedFormulasModal
+            isOpen={isSavedModalOpen}
+            onClose={() => setIsSavedModalOpen(false)}
+            savedFormulas={savedFormulas}
+            currentFormulaState={{
+              season: selectedSeason,
+              seasonTitle: SEASONAL_TEMPLATES[selectedSeason].title,
+              totalVolume,
+              concentrationName,
+              concentrationPercent,
+              slots,
+              tierTotals: formulaResults.tierTotals,
+              totalPercentage: formulaResults.totalPercentage,
+              calculatedIngredients: formulaResults.calculatedIngredients,
+              pureFragranceMl: formulaResults.pureFragranceMl,
+              carrierAlcoholMl: formulaResults.carrierAlcoholMl,
+              perfumeTitle: perfumeName,
+            }}
+            onSaveCurrentFormula={handleSaveCurrentFormula}
+            onLoadFormula={handleLoadFormula}
+            onDeleteFormula={handleDeleteFormula}
+            onClearAllFormulas={handleClearAllFormulas}
+          />
+        </Suspense>
+      )}
 
       {/* Modal 2: AI Evaluator Quick Modal */}
-      <AIEvaluatorModal
-        isOpen={isAIModalOpen}
-        onClose={() => setIsAIModalOpen(false)}
-        seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
-        totalVolume={totalVolume}
-        concentrationName={concentrationName}
-        ingredients={formulaResults.calculatedIngredients}
-        tierTotals={formulaResults.tierTotals}
-        isValidTotal={formulaResults.isValidTotal}
-        onSavePerfumeName={(name) => setPerfumeName(name)}
-      />
+      {isAIModalOpen && (
+        <Suspense fallback={null}>
+          <AIEvaluatorModal
+            isOpen={isAIModalOpen}
+            onClose={() => setIsAIModalOpen(false)}
+            seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
+            totalVolume={totalVolume}
+            concentrationName={concentrationName}
+            ingredients={formulaResults.calculatedIngredients}
+            tierTotals={formulaResults.tierTotals}
+            isValidTotal={formulaResults.isValidTotal}
+            onSavePerfumeName={(name) => setPerfumeName(name)}
+          />
+        </Suspense>
+      )}
 
       {/* Modal 3: Python / Streamlit Source Code */}
-      <PythonStreamlitModal
-        isOpen={isPythonModalOpen}
-        onClose={() => setIsPythonModalOpen(false)}
-        seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
-        totalVolume={totalVolume}
-        slots={slots}
-        onOpenPythonSubWeb={() => {
-          setActivePage('python');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-      />
+      {isPythonModalOpen && (
+        <Suspense fallback={null}>
+          <PythonStreamlitModal
+            isOpen={isPythonModalOpen}
+            onClose={() => setIsPythonModalOpen(false)}
+            seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
+            totalVolume={totalVolume}
+            slots={slots}
+            onOpenPythonSubWeb={() => {
+              setActivePage('python');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Modal 4: Welcome & User Guide Widget (with Voice Guide & Sub-Webs Map) */}
-      <WelcomeGuideModal
-        isOpen={isGuideOpen}
-        onClose={() => setIsGuideOpen(false)}
-        onOpenVoiceWidget={() => setIsVoiceWidgetOpen(true)}
-        onNavigatePage={(page) => {
-          setActivePage(page);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-      />
+      {isGuideOpen && (
+        <Suspense fallback={null}>
+          <WelcomeGuideModal
+            isOpen={isGuideOpen}
+            onClose={() => setIsGuideOpen(false)}
+            onOpenVoiceWidget={() => setIsVoiceWidgetOpen(true)}
+            onNavigatePage={(page) => {
+              setActivePage(page);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Modal 5: Dedicated Voice Recognition Widget (Separate Widget like User Guide) */}
-      <VoiceAssistantModal
-        isOpen={isVoiceWidgetOpen}
-        onClose={() => setIsVoiceWidgetOpen(false)}
-        seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
-        totalVolume={totalVolume}
-        concentrationName={concentrationName}
-        concentrationPercent={concentrationPercent}
-        calculatedIngredients={formulaResults.calculatedIngredients}
-        tierTotals={formulaResults.tierTotals}
-        onApplyAdjustedFormula={handleApplyAIAdjustedFormula}
-        onSaveProposedToDrawer={handleSaveProposedFormulaToDrawer}
-      />
+      {isVoiceWidgetOpen && (
+        <Suspense fallback={null}>
+          <VoiceAssistantModal
+            isOpen={isVoiceWidgetOpen}
+            onClose={() => setIsVoiceWidgetOpen(false)}
+            seasonLabel={SEASONAL_TEMPLATES[selectedSeason].title}
+            totalVolume={totalVolume}
+            concentrationName={concentrationName}
+            concentrationPercent={concentrationPercent}
+            calculatedIngredients={formulaResults.calculatedIngredients}
+            tierTotals={formulaResults.tierTotals}
+            onApplyAdjustedFormula={handleApplyAIAdjustedFormula}
+            onSaveProposedToDrawer={handleSaveProposedFormulaToDrawer}
+          />
+        </Suspense>
+      )}
 
       {/* Modal 6: Add Custom Ingredient Screen */}
-      <AddCustomIngredientModal
-        isOpen={isAddCustomIngredientOpen}
-        onClose={() => setIsAddCustomIngredientOpen(false)}
-        targetSlotKey={addCustomTargetSlotKey}
-        targetTier={addCustomTargetTier}
-        onAddIngredient={handleAddCustomIngredient}
-      />
+      {isAddCustomIngredientOpen && (
+        <Suspense fallback={null}>
+          <AddCustomIngredientModal
+            isOpen={isAddCustomIngredientOpen}
+            onClose={() => setIsAddCustomIngredientOpen(false)}
+            targetSlotKey={addCustomTargetSlotKey}
+            targetTier={addCustomTargetTier}
+            onAddIngredient={handleAddCustomIngredient}
+          />
+        </Suspense>
+      )}
 
       {/* Modal 7: Dedicated Group Experimental Perfume Formula Pop-up (∼✿∼ THỰC HÀNH LÀM NƯỚC HOA ∼✿∼) */}
-      <ExperimentalFormulaPopupModal
-        isOpen={isExperimentalPopupOpen}
-        onClose={() => setIsExperimentalPopupOpen(false)}
-        onOpenExperimentalWeb={() => {
-          setIsExperimentalPopupOpen(false);
-          setActivePage('experimental');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        onApplyVariantToStudio={(adjustedItems, proposedName, summaryNote) => {
-          handleApplyAIAdjustedFormula(adjustedItems, proposedName, summaryNote);
-          setActivePage('main');
-        }}
-        onOpenGuideModal={() => setIsGuideOpen(true)}
-      />
+      {isExperimentalPopupOpen && (
+        <Suspense fallback={null}>
+          <ExperimentalFormulaPopupModal
+            isOpen={isExperimentalPopupOpen}
+            onClose={() => setIsExperimentalPopupOpen(false)}
+            onOpenExperimentalWeb={() => {
+              setIsExperimentalPopupOpen(false);
+              setActivePage('experimental');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onApplyVariantToStudio={(adjustedItems, proposedName, summaryNote) => {
+              handleApplyAIAdjustedFormula(adjustedItems, proposedName, summaryNote);
+              setActivePage('main');
+            }}
+            onOpenGuideModal={() => setIsGuideOpen(true)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
