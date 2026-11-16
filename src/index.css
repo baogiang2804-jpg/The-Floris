@@ -32,7 +32,14 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    background: #FCFAF7;
+  }
+
   body {
+    min-width: 320px;
+    margin: 0;
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
@@ -40,9 +47,43 @@
     color: #1E293B;
   }
 
+  ::selection {
+    color: #7A284D;
+    background: #FBCFE8;
+  }
+
+  :focus-visible {
+    outline: 3px solid #65A875;
+    outline-offset: 3px;
+  }
+
   table, .font-mono {
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* A quiet botanical wash gives every page a consistent spring atmosphere. */
+#root > .min-h-screen {
+  background-image:
+    radial-gradient(ellipse at 8% 0%, rgba(251, 207, 232, 0.26), transparent 34rem),
+    radial-gradient(ellipse at 94% 12%, rgba(187, 247, 208, 0.23), transparent 30rem);
+  background-attachment: fixed;
+}
+
+/* Soft, tactile interaction feedback without changing component behavior. */
+button {
+  -webkit-tap-highlight-color: transparent;
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 180ms;
+  transition-timing-function: ease-out;
+}
+
+button:not(:disabled):hover {
+  filter: saturate(1.06);
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 /* Touch-friendly range slider for OlfactoryPyramidSliders with Warm Botanical theme */
@@ -106,10 +147,18 @@ input[type="range"].pyramid-touch-slider::-moz-range-thumb:active {
 
 /* Subtle spring card styling */
 .botanical-card, .spring-card {
-  background: #FFFFFF;
-  border: 1px solid #FCE7F3;
-  box-shadow: 0 4px 20px -2px rgba(251, 207, 232, 0.25), 0 2px 6px -1px rgba(220, 252, 231, 0.3);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(244, 191, 215, 0.72);
+  box-shadow: 0 8px 26px -12px rgba(159, 79, 111, 0.22), 0 3px 10px -6px rgba(68, 128, 83, 0.18);
   border-radius: 1.25rem;
+  backdrop-filter: blur(8px);
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.botanical-card:hover, .spring-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(232, 151, 185, 0.9);
+  box-shadow: 0 14px 32px -14px rgba(159, 79, 111, 0.3), 0 5px 14px -8px rgba(68, 128, 83, 0.22);
 }
 
 /* Spring Cherry Blossom Petal Animation */
@@ -180,3 +229,15 @@ input[type="range"].pyramid-touch-slider::-moz-range-thumb:active {
   animation: geminiWave 1.2s ease-in-out infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
