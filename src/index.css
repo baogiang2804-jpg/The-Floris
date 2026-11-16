@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Quicksand", "Nunito", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Spring Pastel Theme Palette: Cherry Blossom Pink, Fresh Leaf Green, Butter Yellow, Pearl Cream */
+  --color-slate-950: #FCFAF7;
+  --color-slate-900: #FFFFFF;
+  --color-slate-850: #FDF4F6;
+  --color-slate-800: #FCE7F3;
+  --color-slate-700: #E2E8F0;
+  --color-slate-600: #8C9C90;
+  --color-slate-500: #64748B;
+  --color-slate-400: #475569;
+  --color-slate-300: #334155;
+  --color-slate-200: #1E293B;
+  --color-slate-100: #0F172A;
+  --color-slate-50:  #020617;
+
+  /* Fresh Sprout Leaf Green */
+  --color-emerald-950: #F0FDF4;
+  --color-emerald-900: #DCFCE7;
+  --color-emerald-800: #BBF7D0;
+  --color-emerald-700: #4ADE80;
+  --color-emerald-600: #22C55E;
+  --color-emerald-500: #16A34A;
+  --color-emerald-400: #15803D;
+  --color-emerald-300: #166534;
+  --color-emerald-200: #14532D;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    background-color: #FCFAF7;
+    color: #1E293B;
+  }
+
+  table, .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Touch-friendly range slider for OlfactoryPyramidSliders with Warm Botanical theme */
+input[type="range"].pyramid-touch-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 9999px;
+  outline: none;
+  touch-action: pan-y;
+  background-color: #E6DFD5;
+}
+
+input[type="range"].pyramid-touch-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #3B7A57;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(45, 90, 60, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"].pyramid-touch-slider::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+  background: #2D6344;
+}
+
+input[type="range"].pyramid-touch-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #3B7A57;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(45, 90, 60, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"].pyramid-touch-slider::-moz-range-thumb:active {
+  transform: scale(1.15);
+  background: #2D6344;
+}
+
+@media (min-width: 640px) {
+  input[type="range"].pyramid-touch-slider {
+    height: 6px;
+  }
+  input[type="range"].pyramid-touch-slider::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+  }
+  input[type="range"].pyramid-touch-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Subtle spring card styling */
+.botanical-card, .spring-card {
+  background: #FFFFFF;
+  border: 1px solid #FCE7F3;
+  box-shadow: 0 4px 20px -2px rgba(251, 207, 232, 0.25), 0 2px 6px -1px rgba(220, 252, 231, 0.3);
+  border-radius: 1.25rem;
+}
+
+/* Spring Cherry Blossom Petal Animation */
+@keyframes petalFall {
+  0% {
+    top: -10%;
+    transform: translateX(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.75;
+  }
+  100% {
+    top: 105%;
+    transform: translateX(100px) rotate(420deg) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes petalSway {
+  0%, 100% {
+    transform: translateX(-15px) rotate(-10deg);
+  }
+  50% {
+    transform: translateX(15px) rotate(15deg);
+  }
+}
+
+.animate-petal-fall {
+  position: absolute;
+  pointer-events: none;
+  animation-name: petalFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Gemini Live Dynamic Visualizer Animations */
+@keyframes geminiOrbPulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 20px rgba(244, 114, 182, 0.45));
+  }
+  50% {
+    transform: scale(1.08) rotate(180deg);
+    filter: drop-shadow(0 0 35px rgba(74, 222, 128, 0.5));
+  }
+}
+
+@keyframes geminiWave {
+  0%, 100% {
+    height: 6px;
+    opacity: 0.4;
+  }
+  50% {
+    height: 32px;
+    opacity: 1;
+  }
+}
+
+.animate-gemini-orb {
+  animation: geminiOrbPulse 5s ease-in-out infinite;
+}
+
+.animate-gemini-wave {
+  animation: geminiWave 1.2s ease-in-out infinite;
+}
+
