@@ -6,16 +6,16 @@ import { defineConfig, loadEnv } from 'vite';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-export default defineConfig(({mode}) => {
+export default defineConfig(({mode, command}) => {
   const env = loadEnv(mode, '.', '');
 
-  // Tự động nhận diện base path:
-  // 1. Nếu có biến BASE_PATH (hoặc VITE_BASE) thì dùng biến đó
-  // 2. Nếu chạy trên GitHub Actions (process.env.GITHUB_REPOSITORY có dạng 'user/reponame') -> tự động thành '/reponame/'
-  // 3. Trong môi trường AI Studio preview / dev server -> giữ nguyên '/'
-  const repoName = process.env.GITHUB_REPOSITORY ? process.env.GITHUB_REPOSITORY.split('/')[1] : '';
-  const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
-  const base = process.env.BASE_PATH || env.BASE_PATH || (isGitHubActions && repoName ? `/${repoName}/` : '/');
+  // Base path resolution:
+  // Khi build production (đẩy lên GitHub Pages), dùng './' (relative) để đảm bảo:
+  // - Dù repo tên là gì (/Floris1/, /Floris/, hay user page root /) thì toàn bộ JS/CSS/ảnh đều tải thành công 100%
+  // - Không bao giờ bị lỗi 404 dẫn đến màn hình trắng (Blank White Screen).
+  // Khi chạy dev server cục bộ (command === 'serve'), dùng '/' để server.ts/vite middleware hoạt động chuẩn xác.
+  const customBase = process.env.BASE_PATH || env.BASE_PATH;
+  const base = customBase || (command === 'build' ? './' : '/');
 
   return {
     base,

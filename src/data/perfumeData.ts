@@ -54,23 +54,30 @@ export interface SeasonalTemplate {
   };
 }
 
+const resolveAssetPath = (path: string): string => {
+  const base = import.meta.env.BASE_URL || './';
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${cleanBase}${cleanPath}`;
+};
+
 export const FLORIS_IMAGES = {
   // Brand & Official Posters
-  poster: import.meta.env.BASE_URL + 'assets/aistudio/image_8290b5aa.png', // Poster chính thức chai Floris 10 mL và hoa anh đào
-  logoEmblem: import.meta.env.BASE_URL + 'assets/aistudio/image_404d5511.png', // Con dấu / Logo tròn Floris Eau De Parfum
-  scentStillLife: import.meta.env.BASE_URL + 'assets/aistudio/jasmine_peach_vanilla_scent_art.jpg', // Tác phẩm nghệ thuật 4 nốt hương (Nhài, Đào, Vani, Xạ hương)
-  atelierBench: import.meta.env.BASE_URL + 'assets/aistudio/perfume_atelier_bench.jpg', // Không gian bàn pha chế phòng lab
+  poster: resolveAssetPath('assets/aistudio/image_8290b5aa.png'), // Poster chính thức chai Floris 10 mL và hoa anh đào
+  logoEmblem: resolveAssetPath('assets/aistudio/image_404d5511.png'), // Con dấu / Logo tròn Floris Eau De Parfum
+  scentStillLife: resolveAssetPath('assets/aistudio/jasmine_peach_vanilla_scent_art.jpg'), // Tác phẩm nghệ thuật 4 nốt hương (Nhài, Đào, Vani, Xạ hương)
+  atelierBench: resolveAssetPath('assets/aistudio/perfume_atelier_bench.jpg'), // Không gian bàn pha chế phòng lab
 
   // Real Experimental Bottles (Tổ 1 - 12A13)
-  sampleA: import.meta.env.BASE_URL + 'assets/aistudio/image_7b513f70.png', // Chai nước hoa thực tế nhãn "Mẫu A"
-  sampleC: import.meta.env.BASE_URL + 'assets/aistudio/image_83106fcd.png', // Chai nước hoa thực tế nhãn "mẫu C"
-  sampleB: import.meta.env.BASE_URL + 'assets/aistudio/image_758aa176.png', // Chai chiết 10 mL thực tế trên tay
+  sampleA: resolveAssetPath('assets/aistudio/image_7b513f70.png'), // Chai nước hoa thực tế nhãn "Mẫu A"
+  sampleC: resolveAssetPath('assets/aistudio/image_83106fcd.png'), // Chai nước hoa thực tế nhãn "mẫu C"
+  sampleB: resolveAssetPath('assets/aistudio/image_758aa176.png'), // Chai chiết 10 mL thực tế trên tay
 
   // Real Laboratory Processes
-  infographic9Steps: import.meta.env.BASE_URL + 'assets/aistudio/image_4a90ae30.png', // Infographic chuẩn 9 bước sản xuất Floris
-  pipetteDroppingTestTube: import.meta.env.BASE_URL + 'assets/aistudio/image_6d8dd347.png', // Thực hành nhỏ giọt tinh dầu "LÀI" & "VANI" vào ống nghiệm
-  verticalPipetteSolvent: import.meta.env.BASE_URL + 'assets/aistudio/image_0f1d3808.png', // Nhỏ giọt góc 90° khảo sát dung môi và nước cất
-  clarityInspectionCup: import.meta.env.BASE_URL + 'assets/aistudio/image_320a4e50.png', // Kiểm tra độ trong suốt không đục của cốc dung môi
+  infographic9Steps: resolveAssetPath('assets/aistudio/image_4a90ae30.png'), // Infographic chuẩn 9 bước sản xuất Floris
+  pipetteDroppingTestTube: resolveAssetPath('assets/aistudio/image_6d8dd347.png'), // Thực hành nhỏ giọt tinh dầu "LÀI" & "VANI" vào ống nghiệm
+  verticalPipetteSolvent: resolveAssetPath('assets/aistudio/image_0f1d3808.png'), // Nhỏ giọt góc 90° khảo sát dung môi và nước cất
+  clarityInspectionCup: resolveAssetPath('assets/aistudio/image_320a4e50.png'), // Kiểm tra độ trong suốt không đục của cốc dung môi
 };
 
 export const INGREDIENT_CATALOG: Record<'top' | 'heart' | 'base', PerfumeIngredient[]> = {
